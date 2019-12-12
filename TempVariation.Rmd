@@ -1,0 +1,69 @@
+---
+title: "TempVariation"
+author: "LRA"
+date: "12/11/2019"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(ggplot2)
+library(tidyverse)
+library(lubridate)
+Month_order <- c("January","February","March","April","May","June","July","August","September","October","November","December")
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r import and clean,include=FALSE}
+WA <- read.csv("WA.2019.alltemps.csv")
+OR <- read.csv("OR.alltemps.2019.csv")
+BB <- read.csv("BB.alltemps.2019.csv")
+All <- rbind(WA,OR,BB)
+
+All$DateObs <- as.character(All$DateObs)
+All$DateObs <- as.POSIXct(All$DateObs,format="%m/%d/%y   %H:%M")
+All$Day <- floor_date(All$DateObs,unit = "day")
+All$Month <- floor_date(All$DateObs,unit="month")
+All$Month.w <- as.character.Date(All$Month,format="%B")
+All$Month.w <- ordered(All$Month.w,levels=Month_order)
+
+Summ <- All%>%
+  group_by(Region, SiteCode,SiteName,TidalHeight,Month,Month.w,Day)%>%
+  summarise(DailyMean=mean(TempC),DailyMax=max(TempC),
+            DailyMin=min(TempC),DailyRange=DailyMax-DailyMin,
+            DailySD=sd(TempC),
+            DailySE=sd(TempC)/sqrt(length(TempC)))
+
+Summ_July <- subset(Summ,Month.w=="July")
+```
+
+## July time-series of temperature
+Looking at temperatures by tidal height, site, and region, to see what drives variation in temps
+```{r pressure, echo=FALSE}
+ggplot(Summ_July,aes(x=Day,y=DailyMean,color=SiteName))+geom_point(size=1)+
+  facet_wrap(~Region+TidalHeight,nrow = 3)+
+  labs(title="Daily mean temperatures in July 2019",ylab="Daily mean temp (ºC)")+
+  theme_bw()+
+  theme(strip.background = element_rect(fill="white"))
+ggplot(Summ_July,aes(x=Day,y=DailyMax,color=SiteName))+geom_point(size=1)+
+  facet_wrap(~Region+TidalHeight,nrow = 3)+
+  labs(title="Daily maximum temperatures in July 2019",ylab="Daily max temp (ºC)")+
+  theme_bw()+
+  theme(strip.background = element_rect(fill="white"))
+ggplot(Summ_July,aes(x=Day,y=DailySD,color=SiteName))+geom_point(size=1)+
+  facet_wrap(~Region+TidalHeight,nrow = 3)+
+  labs(title="Daily SD of temperatures in July 2019",ylab="Daily SD (ºC)")+
+  theme_bw()+
+  theme(strip.background = element_rect(fill="white"))
+ggplot(Summ_July,aes(x=Day,y=DailyRange,color=SiteName))+geom_point(size=1)+
+  facet_wrap(~Region+TidalHeight,nrow = 3)+
+  labs(title="Daily temperature range in July 2019",ylab="Daily temp range (ºC)")+
+  theme_bw()+
+  theme(strip.background = element_rect(fill="white"))
+```
+Using a mixed effect model with nested random effects for Region, Site, TidalHeight, daily mean temps are correlated within sites and within regions. So, site-specific variation is important (likely due to site level trends at Bodega?)
