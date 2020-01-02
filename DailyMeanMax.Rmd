@@ -1,0 +1,183 @@
+---
+title: "DailyMeanMax"
+author: "LRA"
+date: "01/02/2019"
+output: github_document
+---
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(ggplot2)
+library(lubridate)
+Month_order <- c("January","February","March","April","May","June","July","August","September","October","November","December")
+```
+## Analysis of temperature logger data
+AK: 3 HOBO loggers, deployed ~May-Aug 2019. Note, the loggers were NOT deployed on the NSFWD transects but at nearby locations.  
+WA: 30 loggers deployed, 23 files recovered across 5 sites. Loggers were deployed on the NSFWD transects. June-July 2019 at most sites, June-Aug 2019 at Beach Haven (WA.C).  
+OR: 9 files from 4 sites, June-Oct 2019
+BB: 11 files from 6 sites, July-Aug 2019
+```{r import and clean,include=FALSE}
+AK_full <- read.csv("AK.2019.alltemps.csv")
+AK_full$DateObs <- as.character(AK_full$DateObs)
+AK_full$DateObs <- as.POSIXct(AK_full$DateObs,format="%m/%d/%y   %H:%M")
+AK_full$Day <- floor_date(AK_full$DateObs,unit = "day")
+AK_full$Month <- floor_date(AK_full$DateObs,unit="month")
+AK_full$Month.w <- as.character.Date(AK_full$Month,format="%B")
+AK_full$Month.w <- ordered(AK_full$Month.w,levels=Month_order)
+
+AK_summ <- AK_full %>%
+  group_by(Region, SiteCode,SiteName,TidalHeight,Month,Day)%>%
+  summarise(DailyMean=mean(TempC),DailyMax=max(TempC),
+            DailySD=sd(TempC),
+            DailySE=sd(TempC)/sqrt(length(TempC)))
+AK_summ$Month.w <- as.character.Date(AK_summ$Month,format="%B")
+AK_summ$Month.w <- ordered(AK_summ$Month.w,levels=Month_order)
+
+WA_full <- read.csv("WA.2019.alltemps.csv")
+WA_full$DateObs <- as.character(WA_full$DateObs)
+WA_full$DateObs <- as.POSIXct(WA_full$DateObs,format="%m/%d/%y   %H:%M")
+WA_full$Day <- floor_date(WA_full$DateObs,unit = "day")
+WA_full$Month <- floor_date(WA_full$DateObs,unit="month")
+WA_full$Month.w <- as.character.Date(WA_full$Month,format="%B")
+WA_full$Month.w <- ordered(WA_full$Month.w,levels=Month_order)
+
+WA_summ <- WA_full %>%
+  group_by(Region, SiteCode,SiteName,TidalHeight,Month,Day)%>%
+  summarise(DailyMean=mean(TempC),DailyMax=max(TempC),
+            DailySD=sd(TempC),
+            DailySE=sd(TempC)/sqrt(length(TempC)))
+WA_summ$Month.w <- as.character.Date(WA_summ$Month,format="%B")
+WA_summ$Month.w <- ordered(WA_summ$Month.w,levels=Month_order)
+
+OR_full <- read.csv("OR.alltemps.2019.csv")
+OR_full$DateObs <- as.character(OR_full$DateObs)
+OR_full$DateObs <- as.POSIXct(OR_full$DateObs,format="%m/%d/%y   %H:%M")
+OR_full$Day <- floor_date(OR_full$DateObs,unit = "day")
+OR_full$Month <- floor_date(OR_full$DateObs,unit="month")
+OR_full$Month.w <- as.character.Date(OR_full$Month,format="%B")
+OR_full$Month.w <- ordered(OR_full$Month.w,levels=Month_order)
+
+OR_summ <- OR_full %>%
+  group_by(Region, SiteCode,SiteName,TidalHeight,Month,Day)%>%
+  summarise(DailyMean=mean(TempC),DailyMax=max(TempC),
+            DailySD=sd(TempC),
+            DailySE=sd(TempC)/sqrt(length(TempC)))
+OR_summ$Month.w <- as.character.Date(OR_summ$Month,format="%B")
+OR_summ$Month.w <- ordered(OR_summ$Month.w,levels=Month_order)
+
+BB_full <- read.csv("BB.alltemps.2019.csv")
+BB_full$DateObs <- as.character(BB_full$DateObs)
+BB_full$DateObs <- as.POSIXct(BB_full$DateObs,format="%m/%d/%y   %H:%M")
+BB_full$Day <- floor_date(BB_full$DateObs,unit = "day")
+BB_full$Month <- floor_date(BB_full$DateObs,unit="month")
+BB_full$Month.w <- as.character.Date(BB_full$Month,format="%B")
+BB_full$Month.w <- ordered(BB_full$Month.w,levels=Month_order)
+
+BB_summ <- BB_full %>%
+  group_by(Region, SiteCode,SiteName,TidalHeight,Month,Day)%>%
+  summarise(DailyMean=mean(TempC),DailyMax=max(TempC),
+            DailyMed=median(TempC),DailySD=sd(TempC),
+            DailySE=sd(TempC)/sqrt(length(TempC)))
+BB_summ$Month.w <- as.character.Date(BB_summ$Month,format="%B")
+BB_summ$Month.w <- ordered(BB_summ$Month.w,levels=Month_order)
+```
+## Daily Mean Temperatures  
+```{r mean temps, echo=FALSE}
+AK_meanp <- ggplot(AK_summ,aes(x=SiteName,y=DailyMean,fill=TidalHeight))+geom_boxplot()+
+  facet_wrap(~Month.w)+
+  scale_fill_manual(values=c("royalblue","lightblue"))+
+  ylab("Daily Mean Temp (ºC)")+
+  xlab("Site")+
+  labs(title="AK 2019 Temps")+
+  theme_bw()+
+  theme(panel.background = element_rect(color="black"),
+        strip.background = element_rect(color="black",fill="white"),
+        axis.text.x=element_text(angle=90))
+AK_meanp
+WA_meanp <- ggplot(WA_summ,aes(x=SiteName,y=DailyMean,fill=TidalHeight))+geom_boxplot()+
+  facet_wrap(~Month.w)+
+  scale_fill_manual(values=c("royalblue","lightblue"))+
+  ylab("Daily Mean Temp (ºC)")+
+  xlab("Site")+
+  labs(title="WA 2019 Temps")+
+  theme_bw()+
+  theme(panel.background = element_rect(color="black"),
+        strip.background = element_rect(color="black",fill="white"),
+        axis.text.x=element_text(angle=90))
+WA_meanp
+OR_meanp <- ggplot(OR_summ,aes(x=SiteName,y=DailyMean,fill=TidalHeight))+geom_boxplot()+
+  facet_wrap(~Month.w)+
+  scale_fill_manual(values=c("royalblue","lightblue"))+
+  ylab("Daily Mean Temp (ºC)")+
+  xlab("Site")+
+  labs(title="OR 2019 Temps")+
+  theme_bw()+
+  theme(panel.background = element_rect(color="black"),
+        strip.background = element_rect(color="black",fill="white"),
+        axis.text.x=element_text(angle=90))
+OR_meanp
+BB_meanp <- ggplot(BB_summ,aes(x=SiteName,y=DailyMean,fill=TidalHeight))+geom_boxplot()+
+  facet_wrap(~Month.w)+
+  scale_fill_manual(values=c("royalblue","lightblue"))+
+  ylab("Daily Mean Temp (ºC)")+
+  xlab("Site")+
+  labs(title="BB 2019 Temps")+
+  theme_bw()+
+  theme(panel.background = element_rect(color="black"),
+        strip.background = element_rect(color="black",fill="white"),
+        axis.text.x=element_text(angle=90))
+BB_meanp
+```  
+  
+Mean temperatures show slight differences between the upper and lower transects, larger differences between sites within regions and across regions  
+
+## Daily Max Temperatures  
+```{r max temps, echo=FALSE}
+AK_maxp <- ggplot(AK_summ,aes(x=SiteName,y=DailyMax,fill=TidalHeight))+geom_boxplot()+
+  facet_wrap(~Month.w)+
+  scale_fill_manual(values=c("royalblue","lightblue"))+
+  ylab("Daily Max Temp (ºC)")+
+  xlab("Site")+
+  labs(title="AK 2019 Temps")+
+  theme_bw()+
+  theme(panel.background = element_rect(color="black"),
+        strip.background = element_rect(color="black",fill="white"),
+        axis.text.x=element_text(angle=90))
+AK_maxp
+WA_maxp <- ggplot(WA_summ,aes(x=SiteName,y=DailyMax,fill=TidalHeight))+geom_boxplot()+
+  facet_wrap(~Month.w)+
+  scale_fill_manual(values=c("royalblue","lightblue"))+
+  ylab("Daily Max Temp (ºC)")+
+  xlab("Site")+
+  labs(title="WA 2019 Temps")+
+  theme_bw()+
+  theme(panel.background = element_rect(color="black"),
+        strip.background = element_rect(color="black",fill="white"),
+        axis.text.x=element_text(angle=90))
+WA_maxp
+OR_maxp <- ggplot(OR_summ,aes(x=SiteName,y=DailyMax,fill=TidalHeight))+geom_boxplot()+
+  facet_wrap(~Month.w)+
+  scale_fill_manual(values=c("royalblue","lightblue"))+
+  ylab("Daily Max Temp (ºC)")+
+  xlab("Site")+
+  labs(title="OR 2019 Temps")+
+  theme_bw()+
+  theme(panel.background = element_rect(color="black"),
+        strip.background = element_rect(color="black",fill="white"),
+        axis.text.x=element_text(angle=90))
+OR_maxp
+BB_maxp <- ggplot(BB_summ,aes(x=SiteName,y=DailyMax,fill=TidalHeight))+geom_boxplot()+
+  facet_wrap(~Month.w)+
+  scale_fill_manual(values=c("royalblue","lightblue"))+
+  ylab("Daily Max Temp (ºC)")+
+  xlab("Site")+
+  labs(title="BB 2019 Temps")+
+  theme_bw()+
+  theme(panel.background = element_rect(color="black"),
+        strip.background = element_rect(color="black",fill="white"),
+        axis.text.x=element_text(angle=90))
+BB_maxp
+```  
+  
+Daily maximum temps are higher and more variable in Washington.
+More intra-region variability in Bodega.
