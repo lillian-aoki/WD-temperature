@@ -1,7 +1,7 @@
 DailyMeanMax
 ================
 LRA
-12/11/2019
+01/02/2019
 
 ## Analysis of temperature logger data
 
