@@ -42,6 +42,7 @@ Summ_July <- subset(Summ,Month.w=="July")
 ## July time-series of temperature
 Looking at temperatures by tidal height, site, and region, to see what drives variation in temps
 ```{r temp plots, echo=FALSE}
+<<<<<<< HEAD
 ggplot(Summ_July,aes(x=Day,y=DailyMean,color=SiteName))+geom_point(size=0.8)+
   facet_grid(rows=vars(Region),cols=vars(TidalHeight))+
   #facet_wrap(~Region+TidalHeight,nrow = 4,drop = FALSE)+
@@ -51,10 +52,19 @@ ggplot(Summ_July,aes(x=Day,y=DailyMean,color=SiteName))+geom_point(size=0.8)+
   theme_bw()+
   theme(strip.background = element_rect(fill="white"),
         legend.margin =margin(l=0,r=0,unit="mm"))
+=======
+ggplot(Summ_July,aes(x=Day,y=DailyMean,color=SiteName))+geom_point(size=1)+
+  facet_grid(rows=vars(Region),cols=vars(TidalHeight))+
+  #facet_wrap(~Region+TidalHeight,nrow = 4,drop = FALSE)+
+  labs(title="Daily mean temperatures in July 2019",ylab="Daily mean temp (ºC)")+
+  theme_bw()+
+  theme(strip.background = element_rect(fill="white"))
+>>>>>>> 1f33c96b551a1627c65f6835e84d4f0ef8688ab9
 
 ggplot(Summ_July,aes(x=Day,y=DailyMax,color=SiteName))+geom_point(size=1)+
   facet_grid(rows=vars(Region),cols=vars(TidalHeight))+
   #facet_wrap(~Region+TidalHeight,nrow = 3)+
+<<<<<<< HEAD
   labs(title="Daily maximum temperatures in July 2019")+
   ylab("Daily maximum temp (ºC)")+
   scale_x_datetime(date_breaks = "8 days",date_labels="%b %d")+
@@ -62,25 +72,42 @@ ggplot(Summ_July,aes(x=Day,y=DailyMax,color=SiteName))+geom_point(size=1)+
   theme(strip.background = element_rect(fill="white"),
         legend.margin =margin(l=0,r=0,unit="mm"))
 
+=======
+  labs(title="Daily maximum temperatures in July 2019",ylab="Daily max temp (ºC)")+
+  theme_bw()+
+  theme(strip.background = element_rect(fill="white"))
+>>>>>>> 1f33c96b551a1627c65f6835e84d4f0ef8688ab9
 
 ggplot(Summ_July,aes(x=Day,y=DailySD,color=SiteName))+geom_point(size=1)+
   facet_grid(rows=vars(Region),cols=vars(TidalHeight))+
   #facet_wrap(~Region+TidalHeight,nrow = 3)+
+<<<<<<< HEAD
   labs(title="Daily SD of temperatures in July 2019")+
   ylab("Daily SD of temp (ºC)")+
   scale_x_datetime(date_breaks = "8 days",date_labels="%b %d")+
   theme_bw()+
   theme(strip.background = element_rect(fill="white"),
         legend.margin =margin(l=0,r=0,unit="mm"))
+=======
+  labs(title="Daily SD of temperatures in July 2019",ylab="Daily SD (ºC)")+
+  theme_bw()+
+  theme(strip.background = element_rect(fill="white"))
+>>>>>>> 1f33c96b551a1627c65f6835e84d4f0ef8688ab9
 
 ggplot(Summ_July,aes(x=Day,y=DailyRange,color=SiteName))+geom_point(size=1)+
   facet_grid(rows=vars(Region),cols=vars(TidalHeight))+
   #facet_wrap(~Region+TidalHeight,nrow = 3)+
+<<<<<<< HEAD
   labs(title="Daily temperature range in July 2019")+
   ylab("Daily temperature range (ºC)")+
   scale_x_datetime(date_breaks = "8 days",date_labels="%b %d")+
   theme_bw()+
   theme(strip.background = element_rect(fill="white"),
         legend.margin =margin(l=0,r=0,unit="mm"))
+=======
+  labs(title="Daily temperature range in July 2019",ylab="Daily temp range (ºC)")+
+  theme_bw()+
+  theme(strip.background = element_rect(fill="white"))
+>>>>>>> 1f33c96b551a1627c65f6835e84d4f0ef8688ab9
 
 ```
