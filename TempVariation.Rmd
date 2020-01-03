@@ -38,7 +38,7 @@ Summ_July <- subset(Summ,Month.w=="July")
 
 ## July time-series of temperature
 Looking at temperatures by tidal height, site, and region, to see what drives variation in temps
-```{r pressure, echo=FALSE}
+```{r time_series_plots, echo=FALSE}
 ggplot(Summ_July,aes(x=Day,y=DailyMean,color=SiteName))+geom_point(size=1)+
   facet_wrap(~Region+TidalHeight,nrow = 3)+
   labs(title="Daily mean temperatures in July 2019",ylab="Daily mean temp (ºC)")+
@@ -59,6 +59,38 @@ ggplot(Summ_July,aes(x=Day,y=DailyRange,color=SiteName))+geom_point(size=1)+
   labs(title="Daily temperature range in July 2019",ylab="Daily temp range (ºC)")+
   theme_bw()+
   theme(strip.background = element_rect(fill="white"))
+```
+
+```{r tidal_heights, echo=FALSE}
+All_JJA <- subset(All,Month.w=="June"|Month.w=="July"|Month.w=="August")
+All_JJA_summ <- All_JJA %>%
+  group_by(Region, SiteCode,SiteName,TidalHeight,Month,Month.w,Day)%>%
+  summarise(DailyMean=mean(TempC),DailyMax=max(TempC),
+            DailyMed=median(TempC),DailySD=sd(TempC),
+            DailySE=sd(TempC)/sqrt(length(TempC)))
+All_JJA_summ <- subset(All_JJA_summ,Region!="AK")
+
+ggplot(All_JJA_summ,aes(x=SiteCode,y=DailyMean,fill=TidalHeight))+geom_boxplot()+
+  facet_grid(rows=vars(Region),cols=vars(Month.w),scale="free")+
+  scale_fill_manual(values=c("royalblue","lightblue"))+
+  ylab("Daily Mean Temp (ºC)")+
+  xlab("Site")+
+  labs(title="Summer 2019 Daily Mean Temps")+
+  theme_bw()+
+  theme(panel.background = element_rect(color="black"),
+        strip.background = element_rect(color="black",fill="white"),
+        axis.text.x=element_text(angle=90))
+
+ggplot(All_JJA_summ,aes(x=SiteCode,y=DailyMax,fill=TidalHeight))+geom_boxplot()+
+  facet_grid(rows=vars(Region),cols=vars(Month.w),scale="free")+
+  scale_fill_manual(values=c("royalblue","lightblue"))+
+  ylab("Daily Max Temp (ºC)")+
+  xlab("Site")+
+  labs(title="Summer 2019 Daily Max Temps")+
+  theme_bw()+
+  theme(panel.background = element_rect(color="black"),
+        strip.background = element_rect(color="black",fill="white"),
+        axis.text.x=element_text(angle=90))
 ```
 
 Using a mixed effect model with nested random effects for Region, Site, TidalHeight, daily mean temps are correlated within sites and within regions. So, site-specific variation is important (likely due to site level trends at Bodega?)
