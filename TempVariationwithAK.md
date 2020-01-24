@@ -1,7 +1,7 @@
 TempVariationwithAK
 ================
 LRA
-1/2/2020
+1/24/2020
 
 ## July time-series of temperature
 
