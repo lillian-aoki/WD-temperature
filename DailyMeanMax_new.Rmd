@@ -41,7 +41,7 @@ Looking at daily mean and max temps from HOBO loggers
 ```{r dailymean, echo=FALSE}
 ggplot(All_JJA_summ,aes(x=SiteCode,y=DailyMean,fill=TidalHeight))+geom_boxplot()+
   stat_summary(fun.y=mean,geom="point",shape=8,size=2,show.legend=FALSE,position=position_dodge(width=0.75))+
-  facet_grid(rows=vars(Region),cols=vars(Month.w),scale="fixed")+
+  facet_grid(rows=vars(Region),cols=vars(Month.w),scale="free")+
   scale_fill_manual(values=c("blue2","royalblue","lightblue"))+
   ylab("Daily Mean Temp (ºC)")+
   xlab("Site")+
