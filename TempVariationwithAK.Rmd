@@ -3,8 +3,8 @@ title: "TempVariationwithAK"
 author: "LRA"
 date: "1/24/2020"
 output: github_document
-fig_width: 8 
-fig_height: 6
+fig_width: 10 
+fig_height: 10
 ---
 
 ```{r setup, include=FALSE}
@@ -23,7 +23,8 @@ OR <- read.csv("OR.alltemps.2019.csv")
 BB <- read.csv("BB.alltemps.2019.csv")
 AK <- read.csv("AK.2019.alltemps.csv")
 BC <- read.csv("BC.alltemps.2019.csv")
-All <- rbind(AK,BC,WA,OR,BB)
+SD <- read.csv("SD.alltemps.2019.csv")
+All <- rbind(AK,BC,WA,OR,BB,SD)
 
 All$DateObs <- as.character(All$DateObs)
 All$DateObs <- as.POSIXct(All$DateObs,format="%m/%d/%y   %H:%M")
