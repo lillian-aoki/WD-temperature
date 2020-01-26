@@ -50,6 +50,18 @@ ggplot(All_JJA_summ,aes(x=SiteCode,y=DailyMean,fill=TidalHeight))+geom_boxplot()
   theme(panel.background = element_rect(color="black"),
         strip.background = element_rect(color="black",fill="white")
         )
+
+ggplot(All_JJA_summ[All_JJA_summ$Region!="AK" & All_JJA_summ$Region!="BC",],aes(x=SiteCode,y=DailyMean,fill=TidalHeight))+geom_boxplot()+
+  stat_summary(fun.y=mean,geom="point",shape=8,size=2,show.legend=FALSE,position=position_dodge(width=0.75))+
+  facet_grid(rows=vars(Region),cols=vars(Month.w),scale="free")+
+  scale_fill_manual(values=c("royalblue","lightblue"))+
+  ylab("Daily Mean Temp (ºC)")+
+  xlab("Site")+
+  labs(title="Summer 2019 Daily Mean Temps")+
+  theme_bw()+
+  theme(panel.background = element_rect(color="black"),
+        strip.background = element_rect(color="black",fill="white")
+        )
 ```
 
 ```{r dailymax, echo=FALSE}
@@ -57,6 +69,18 @@ ggplot(All_JJA_summ,aes(x=SiteCode,y=DailyMax,fill=TidalHeight))+geom_boxplot()+
   stat_summary(fun.y=mean,geom="point",shape=8,size=2,show.legend=FALSE,position=position_dodge(width=0.75))+
     facet_grid(rows=vars(Region),cols=vars(Month.w),scale="free")+
   scale_fill_manual(values=c("darkblue","royalblue","lightblue"))+
+  ylab("Daily Max Temp (ºC)")+
+  xlab("Site")+
+  labs(title="Summer 2019 Daily Max Temps")+
+  theme_bw()+
+  theme(panel.background = element_rect(color="black"),
+        strip.background = element_rect(color="black",fill="white")
+        )
+
+ggplot(All_JJA_summ[All_JJA_summ$Region!="AK" & All_JJA_summ$Region!="BC",],aes(x=SiteCode,y=DailyMax,fill=TidalHeight))+geom_boxplot()+
+  stat_summary(fun.y=mean,geom="point",shape=8,size=2,show.legend=FALSE,position=position_dodge(width=0.75))+
+    facet_grid(rows=vars(Region),cols=vars(Month.w),scale="free")+
+  scale_fill_manual(values=c("royalblue","lightblue"))+
   ylab("Daily Max Temp (ºC)")+
   xlab("Site")+
   labs(title="Summer 2019 Daily Max Temps")+
