@@ -1,0 +1,67 @@
+---
+title: "DailyMeanMax_new"
+author: "LRA"
+date: "1/25/2020"
+output: github_document
+fig_width: 10 
+fig_height: 10
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(ggplot2)
+library(tidyverse)
+library(lubridate)
+Month_order <- c("January","February","March","April","May","June","July","August","September","October","November","December")
+SiteCode_order <- c("A","B","C","D","E","F")
+Region_order <- c("AK","BC","WA","OR","BB","SD")
+```
+
+```{r data, echo=FALSE}
+All <- read.csv("Allsites.alltemps.2019.csv")
+All$DateObs <- as.character(All$DateObs) 
+All$DateObs <- as.POSIXct(All$DateObs,format="%Y-%m-%d  %H:%M:%S")
+All$Day <- floor_date(All$DateObs,unit = "day")
+All$Month <- floor_date(All$DateObs,unit="month")
+All$Month.w <- as.character.Date(All$Month,format="%B")
+All$Month.w <- ordered(All$Month.w,levels=Month_order)
+All$Region <- ordered(All$Region,levels=Region_order)
+
+All_JJA <- subset(All,Month.w=="June"|Month.w=="July"|Month.w=="August")
+All_JJA_summ <- All_JJA %>%
+  group_by(Region, SiteCode,SiteName,TidalHeight,Month,Month.w,Day)%>%
+  summarise(DailyMean=mean(TempC),DailyMax=max(TempC),
+            DailyMed=median(TempC),DailySD=sd(TempC),
+            DailySE=sd(TempC)/sqrt(length(TempC)))
+All_JJA_summ$SiteCode <- ordered(All_JJA_summ$SiteCode,levels=SiteCode_order)
+```
+
+Looking at daily mean and max temps from HOBO loggers
+
+```{r dailymean, echo=FALSE}
+ggplot(All_JJA_summ,aes(x=SiteCode,y=DailyMean,fill=TidalHeight))+geom_boxplot()+
+  stat_summary(fun.y=mean,geom="point",shape=8,size=2,show.legend=FALSE,position=position_dodge(width=0.75))+
+  facet_grid(rows=vars(Region),cols=vars(Month.w),scale="fixed")+
+  scale_fill_manual(values=c("blue2","royalblue","lightblue"))+
+  ylab("Daily Mean Temp (ºC)")+
+  xlab("Site")+
+  labs(title="Summer 2019 Daily Mean Temps")+
+  theme_bw()+
+  theme(panel.background = element_rect(color="black"),
+        strip.background = element_rect(color="black",fill="white")
+        )
+```
+
+```{r dailymax, echo=FALSE}
+ggplot(All_JJA_summ,aes(x=SiteCode,y=DailyMax,fill=TidalHeight))+geom_boxplot()+
+  stat_summary(fun.y=mean,geom="point",shape=8,size=2,show.legend=FALSE,position=position_dodge(width=0.75))+
+    facet_grid(rows=vars(Region),cols=vars(Month.w),scale="free")+
+  scale_fill_manual(values=c("darkblue","royalblue","lightblue"))+
+  ylab("Daily Max Temp (ºC)")+
+  xlab("Site")+
+  labs(title="Summer 2019 Daily Max Temps")+
+  theme_bw()+
+  theme(panel.background = element_rect(color="black"),
+        strip.background = element_rect(color="black",fill="white")
+        )
+```

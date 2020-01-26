@@ -14,24 +14,18 @@ library(tidyverse)
 library(lubridate)
 Month_order <- c("January","February","March","April","May","June","July","August","September","October","November","December")
 SiteCode_order <- c("A","B","C","D","E","F")
-
+Region_order <- c("AK","BC","WA","OR","BB","SD")
 ```
 
 ```{r import and clean,include=FALSE}
-WA <- read.csv("WA.2019.alltemps.csv")
-OR <- read.csv("OR.alltemps.2019.csv")
-BB <- read.csv("BB.alltemps.2019.csv")
-AK <- read.csv("AK.2019.alltemps.csv")
-BC <- read.csv("BC.alltemps.2019.csv")
-SD <- read.csv("SD.alltemps.2019.csv")
-All <- rbind(AK,BC,WA,OR,BB,SD)
-
-All$DateObs <- as.character(All$DateObs)
-All$DateObs <- as.POSIXct(All$DateObs,format="%m/%d/%y   %H:%M")
+All <- read.csv("Allsites.alltemps.2019.csv")
+All$DateObs <- as.character(All$DateObs) 
+All$DateObs <- as.POSIXct(All$DateObs,format="%Y-%m-%d  %H:%M:%S")
 All$Day <- floor_date(All$DateObs,unit = "day")
 All$Month <- floor_date(All$DateObs,unit="month")
 All$Month.w <- as.character.Date(All$Month,format="%B")
 All$Month.w <- ordered(All$Month.w,levels=Month_order)
+All$Region <- ordered(All$Region,levels=Region_order)
 
 Summ <- All%>%
   group_by(Region, SiteCode,SiteName,TidalHeight,Month,Month.w,Day)%>%
